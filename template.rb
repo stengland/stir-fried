@@ -116,7 +116,7 @@ get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/li
 get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/modernizr-2.0.min.js", "app/assets/javascripts/libs/modernizr-2.0.min.js"
 get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/jquery-1.6.2.min.js", "app/assets/javascripts/libs/jquery-1.6.2.min.js"
 get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/jcarousellite_1.0.1.min.js", "app/assets/javascripts/libs/jcarousellite_1.0.1.min.js"
-get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/jquery.fancybox-1.3.4.js'", "app/assets/javascripts/libs/jquery.fancybox-1.3.4.js"
+get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/jquery.fancybox-1.3.4.js", "app/assets/javascripts/libs/jquery.fancybox-1.3.4.js"
 get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/libs/slides.min.jquery.js", "app/assets/javascripts/libs/slides.min.jquery.js"
 get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/javascripts/src/base.js", "app/assets/javascripts/src/base.js"
 
