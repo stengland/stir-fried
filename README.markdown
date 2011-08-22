@@ -1,5 +1,5 @@
 # Stir Fried
-A Rails template for Noodall
+A Rails template for Noodall, implementing Beefplate, Sprockets and lovley-ness.
 
 ## What does it do?
 
