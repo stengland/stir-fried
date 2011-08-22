@@ -139,9 +139,9 @@ run 'bundle install'
 #----------------------------------------------------------------------------
 # GIT
 #----------------------------------------------------------------------------
-git :init
-git :add => "."
-git :commit => "-a -m 'Initial Beefplate Commit'"
+# git :init
+# git :add => "."
+# git :commit => "-a -m 'Initial Beefplate Commit'"
 
 
 
