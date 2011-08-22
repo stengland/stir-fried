@@ -7,13 +7,13 @@ A cake load of stuff. Really, a victoria sponge worths of front end lovley-ness.
 
 * Install SASS, Compass and Sprockets Gems
 * Sets up the Beef standard options for these Gems
-* *Coming Soon...* Create an .RVMC File for rvm
-* *Coming Soon...* Update Git Ignore File with 
+* **Coming Soon...** Create an .RVMC File for rvm
+* **Coming Soon...** Update Git Ignore File with 
 * Removes some files leftover from Noodall, Rails and Gems
 * Creates Assets Folders
 * Adds Beefplate 
-* *Coming Soon...* Use's Bundler to install Gems 
-* *Coming Soon...* Commits everything to GitHub.
+* **Coming Soon...** Use's Bundler to install Gems 
+* **Coming Soon...** Commits everything to GitHub.
 
 ## How the hell do I make it do that?
 
