@@ -12,7 +12,71 @@
 # discoliam.com
 # wearebeef.co.uk
 #----------------------------------------------------------------------------
+#
+#
+# >---------------------------------------------------------------------------<
+#
+#            _____       _ _   __          ___                  _
+#           |  __ \     (_) |  \ \        / (_)                | |
+#           | |__) |__ _ _| |___\ \  /\  / / _ ______ _ _ __ __| |
+#           |  _  // _` | | / __|\ \/  \/ / | |_  / _` | '__/ _` |
+#           | | \ \ (_| | | \__ \ \  /\  /  | |/ / (_| | | | (_| |
+#           |_|  \_\__,_|_|_|___/  \/  \/   |_/___\__,_|_|  \__,_|
+#
+# >----------------------------[ Initial Setup ]------------------------------<
 
+initializer 'generators.rb', <<-RUBY
+Rails.application.config.generators do |g|
+end
+RUBY
+
+@recipes = ["capybara", "devise", "git", "heroku", "mongo_mapper", "mongohq", "rspec", "test_unit"]
+
+def recipes; @recipes end
+def recipe?(name); @recipes.include?(name) end
+
+def say_custom(tag, text); say "\033[1m\033[36m" + tag.to_s.rjust(10) + "\033[0m" + "  #{text}" end
+def say_recipe(name); say "\033[1m\033[36m" + "recipe".rjust(10) + "\033[0m" + "  Running #{name} recipe..." end
+def say_wizard(text); say_custom(@current_recipe || 'wizard', text) end
+
+def ask_wizard(question)
+  ask "\033[1m\033[30m\033[46m" + (@current_recipe || "prompt").rjust(10) + "\033[0m\033[36m" + "  #{question}\033[0m"
+end
+
+def yes_wizard?(question)
+  answer = ask_wizard(question + " \033[33m(y/n)\033[0m")
+  case answer.downcase
+    when "yes", "y"
+      true
+    when "no", "n"
+      false
+    else
+      yes_wizard?(question)
+  end
+end
+
+def no_wizard?(question); !yes_wizard?(question) end
+
+def multiple_choice(question, choices)
+  say_custom('question', question)
+  values = {}
+  choices.each_with_index do |choice,i|
+    values[(i + 1).to_s] = choice[1]
+    say_custom (i + 1).to_s + ')', choice[0]
+  end
+  answer = ask_wizard("Enter your selection:") while !values.keys.include?(answer)
+  values[answer]
+end
+
+@current_recipe = nil
+@configs = {}
+
+@after_blocks = []
+def after_bundler(&block); @after_blocks << [@current_recipe, block]; end
+@after_everything_blocks = []
+def after_everything(&block); @after_everything_blocks << [@current_recipe, block]; end
+@before_configs = {}
+def before_config(&block); @before_configs[@current_recipe] = block; end
 
 # RESOURCES
 # http://everydayrails.com/2011/02/28/rails-3-application-templates.html
@@ -128,12 +192,71 @@ get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/humans.txt", "
 #----------------------------------------------------------------------------
 # GIT
 #----------------------------------------------------------------------------
-# git :init
-# git :add => "."
-# git :commit => "-a -m 'Initial Beefplate Commit'"
+git :init
+git :add => "."
+git :commit => "-a -m 'Initial Beefplate Commit'"
+
+# >--------------------------------[ Heroku ]---------------------------------<
+
+@current_recipe = "heroku"
+@before_configs["heroku"].call if @before_configs["heroku"]
+say_recipe 'Heroku'
+gem 'heroku', :group => :development, :require => false
+
+config = {}
+config['create'] = yes_wizard?("Automatically create #{app_name}.heroku.com?") if true && true unless config.key?('create')
+config['staging'] = yes_wizard?("Create staging app? (#{app_name}-staging.heroku.com)") if config['create'] && true unless config.key?('staging')
+config['domain'] = ask_wizard("Specify custom domain (or leave blank):") if config['create'] && true unless config.key?('domain')
+config['deploy'] = yes_wizard?("Deploy immediately?") if config['create'] && true unless config.key?('deploy')
+@configs[@current_recipe] = config
+
+heroku_name = app_name.gsub('_','')
+
+after_everything do
+  if config['create']
+    say_wizard "Creating Heroku app '#{heroku_name}.heroku.com'"
+    while !system("heroku create #{heroku_name} -r production -s cedar")
+      heroku_name = ask_wizard("What do you want to call your app? ")
+    end
+    # Production setup
+    system "heroku addons:add sendgrid:starter -r production"
+    system "heroku addons:add memcache:5mb -r production"
+    system "heroku addons:add mongohq:small -r production"
+    system "heroku config:add BUNDLE_WITHOUT='development:test' -r production"
+  end
+
+  if config['staging']
+    staging_name = "#{heroku_name}-staging"
+    say_wizard "Creating staging Heroku app '#{staging_name}.heroku.com'"
+    while !system("heroku create #{staging_name} -r staging -s cedar")
+      staging_name = ask_wizard("What do you want to call your staging app?")
+    end
+    # Staging setup
+    system "heroku addons:add sendgrid:starter -r staging"
+    system "heroku addons:add memcache:5mb -r staging"
+    system "heroku addons:add mongohq:free -r staging"
+    system "heroku config:add BUNDLE_WITHOUT='development:test' -r staging"
+    say_wizard "Created remotes 'production' and 'staging' for Heroku deploy."
+  end
+
+  unless config['domain'].blank?
+    run "heroku addons:add custom_domains -r production"
+    run "heroku domains:add #{config['domain']} -r production"
+  end
 
 
+  git :push => "staging master" if config['deploy']
+end
 
+@current_recipe = nil
 
-# how to append stuff
-#append_file 'public/stylesheets/application.css', '@import url("scaffold.css");
+# >-----------------------------[ Run Bundler ]-------------------------------<
+
+say_wizard "Running Bundler install. This will take a while."
+run 'bundle install'
+say_wizard "Running after Bundler callbacks."
+@after_blocks.each{|b| config = @configs[b[0]] || {}; @current_recipe = b[0]; b[1].call}
+
+@current_recipe = nil
+say_wizard "Running after everything callbacks."
+@after_everything_blocks.each{|b| config = @configs[b[0]] || {}; @current_recipe = b[0]; b[1].call}
