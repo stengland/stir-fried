@@ -129,6 +129,21 @@ rvmrc = "rvm 1.9.2@#{app_name} --create"
 create_file '.rvmrc', rvmrc
 
 #----------------------------------------------------------------------------
+# PROTECT STAGING ENV
+#----------------------------------------------------------------------------
+gem 'rack-private', '~> 0.1.8', :group => :staging
+FileUtils.cp "config/environments/production.rb", "config/environments/staging.rb"
+insert_into_file "config/environments/staging.rb", :after => "Application.configure do\n" do
+  <<-RUBY
+  # Protect staging app
+  require 'rack-private'
+  config.middleware.use Rack::Private, :code => 'password'
+
+  RUBY
+end
+
+
+#----------------------------------------------------------------------------
 # UPDATE GIT IGNORE
 #----------------------------------------------------------------------------
 #sass cache, DS_Store, Anything else?
@@ -236,6 +251,7 @@ after_everything do
     system "heroku addons:add memcache:5mb -r staging"
     system "heroku addons:add mongohq:free -r staging"
     system "heroku config:add BUNDLE_WITHOUT='development:test' -r staging"
+    system "heroku config:add RACK_ENV='staging' -r staging"
     say_wizard "Created remotes 'production' and 'staging' for Heroku deploy."
   end
 
