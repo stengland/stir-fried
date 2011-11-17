@@ -121,6 +121,10 @@ end
 # :syntax = :scss
 #
 # Also in production, stylesheets should be compressed into one application stylesheet
+#----------------------------------------------------------------------------
+# USE DALLI CAHCE STORE
+#----------------------------------------------------------------------------
+gsub_file('config/environments/production.rb', '# config.cache_store = :mem_cache_store', 'config.cache_store = :dalli_store')
 
 #----------------------------------------------------------------------------
 # CREATE RVMC FILE
