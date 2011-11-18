@@ -217,6 +217,7 @@ after_bundler do
   git :init
   git :add => "."
   git :commit => "-a -m 'Initial Beefplate Commit'"
+  git :flow => 'init'
 end
 #Apend gitignore
 #sass cache, DS_Store, Anything else?
