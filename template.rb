@@ -156,12 +156,6 @@ admin_password = ask("What is the default admin password? (Default: password)")
 gsub_file 'db/seeds.rb', '"password"', "\"#{ admin_password }\"" unless admin_email.empty?
 
 #----------------------------------------------------------------------------
-# UPDATE GIT IGNORE
-#----------------------------------------------------------------------------
-#sass cache, DS_Store, Anything else?
-append_file '.gitignore', '.DS_Store'
-
-#----------------------------------------------------------------------------
 # REMOVE FILES
 #----------------------------------------------------------------------------
 remove_file 'app/views/layouts/application.html.erb'
@@ -219,9 +213,16 @@ get "https://raw.github.com/discoliam/beefplate/noodallplate/Site/humans.txt", "
 #----------------------------------------------------------------------------
 # GIT
 #----------------------------------------------------------------------------
-git :init
-git :add => "."
-git :commit => "-a -m 'Initial Beefplate Commit'"
+after_bundler do
+  git :init
+  git :add => "."
+  git :commit => "-a -m 'Initial Beefplate Commit'"
+end
+#Apend gitignore
+#sass cache, DS_Store, Anything else?
+append_file '.gitignore', '.DS_Store'
+#----------------------------------------------------------------------------
+
 
 # >--------------------------------[ Heroku ]---------------------------------<
 
