@@ -91,7 +91,7 @@ def before_config(&block); @before_configs[@current_recipe] = block; end
 # INSTALLING NEW GEMS
 #----------------------------------------------------------------------------
 insert_into_file "Gemfile", :after => "gem 'uglifier', '>= 1.0.3'\n" do
-  "  gem 'compass'\n"
+  "  gem 'compass', :require => false\n"
 end
 
 #----------------------------------------------------------------------------
