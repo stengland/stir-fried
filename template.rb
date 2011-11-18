@@ -138,10 +138,12 @@ create_file '.rvmrc', rvmrc
 gem 'rack-private', '~> 0.1.8', :group => :staging
 FileUtils.cp "config/environments/production.rb", "config/environments/staging.rb"
 insert_into_file "config/environments/staging.rb", :after => "Application.configure do\n" do
+  password = ask("What password would you like on the staging site? (Default: password)")
+  password = 'password' if password.empty?
   <<-RUBY
   # Protect staging app
   require 'rack-private'
-  config.middleware.use Rack::Private, :code => 'password'
+  config.middleware.use Rack::Private, :code => '#{password}'
 
   RUBY
 end
