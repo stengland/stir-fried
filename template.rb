@@ -147,7 +147,13 @@ insert_into_file "config/environments/staging.rb", :after => "Application.config
 
   RUBY
 end
-
+#----------------------------------------------------------------------------
+# SET DEFAULT ADMIN EMAIL AND PASSWORD
+#----------------------------------------------------------------------------
+admin_email = ask("What is the default admin email? (Default: admin@example.com)")
+gsub_file 'db/seeds.rb', 'admin@example.com', admin_email unless admin_email.empty?
+admin_password = ask("What is the default admin password? (Default: password)")
+gsub_file 'db/seeds.rb', '"password"', "\"#{ admin_password }\"" unless admin_email.empty?
 
 #----------------------------------------------------------------------------
 # UPDATE GIT IGNORE
