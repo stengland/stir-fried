@@ -30,7 +30,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["capybara", "devise", "git", "heroku", "mongo_mapper", "mongohq", "rspec", "test_unit"]
+@recipes = ["heroku"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
